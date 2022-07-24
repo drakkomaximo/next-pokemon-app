@@ -7,7 +7,7 @@ import confetti from 'canvas-confetti'
 
 import { pokeApi } from '../../api';
 import { Layout } from '../../components/layouts'
-import { Pokemon, Sprites } from '../../interfaces';
+import { Pokemon, PokemonListResponse, Sprites } from '../../interfaces';
 import { getPokemonInfo, localFavorites } from '../../utils';
 
 interface Props {
@@ -33,7 +33,7 @@ const renderSprites = [
   },
 ]
 
-const PokemonPage: NextPage<Props> = ({ pokemon }) => {
+const PokemonByNamePage: NextPage<Props> = ({ pokemon }) => {
 
   const [isInFavorite, setisInFavorite] = useState<boolean>(false)
 
@@ -43,29 +43,29 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
     return filterarray[0][1]
   }
 
-  const onToggleFavorite = () =>{
-    localFavorites.toggleFavorite( pokemon.id )
-    setisInFavorite( !isInFavorite )
+  const onToggleFavorite = () => {
+    localFavorites.toggleFavorite(pokemon.id)
+    setisInFavorite(!isInFavorite)
 
-    if( isInFavorite ) return
+    if (isInFavorite) return
 
     confetti({
       zIndex: 999,
       particleCount: 100,
       spread: 160,
       angle: -100,
-      origin:{
-        x:1,
-        y:0
+      origin: {
+        x: 1,
+        y: 0
       }
     })
   }
 
   useEffect(() => {
-    setisInFavorite( localFavorites.existInFavorites( pokemon.id ) )
+    setisInFavorite(localFavorites.existInFavorites(pokemon.id))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-  
+
 
   return (
     <Layout title={pokemon.name}>
@@ -88,10 +88,10 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
             <Card.Header css={{ display: 'flex', justifyContent: 'space-between' }}>
               <Text h1 transform='capitalize'>{pokemon.name}</Text>
 
-              <Button 
-                color={ isInFavorite ? 'error' : 'gradient'} 
+              <Button
+                color={isInFavorite ? 'error' : 'gradient'}
                 onPress={onToggleFavorite}>
-                {isInFavorite ? 'Remover de favoritos': 'Guardar en favoritos' } 
+                {isInFavorite ? 'Remover de favoritos' : 'Guardar en favoritos'}
               </Button>
             </Card.Header>
 
@@ -122,11 +122,11 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
 // You should use getStaticPaths if you’re statically pre-rendering pages that use dynamic routes
 export const getStaticPaths: GetStaticPaths = async (ctx) => {
 
-  const pokemons151 = [...Array(151)].map((value, index) => `${index + 1}`)
+  const { data } = await pokeApi.get<PokemonListResponse>(`/pokemon?limit=151`)
 
   return {
-    paths: pokemons151.map(id => ({
-      params: { id }
+    paths: data.results.map(({ name }) => ({
+      params: { name }
     })),
     fallback: false
   }
@@ -134,9 +134,9 @@ export const getStaticPaths: GetStaticPaths = async (ctx) => {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 
-  const { id } = params as { id: string }
+  const { name } = params as { name: string }
 
-  const pokemon = await getPokemonInfo(id)
+  const pokemon = await getPokemonInfo(name)
 
   return {
     props: {
@@ -145,4 +145,4 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   }
 }
 
-export default PokemonPage
+export default PokemonByNamePage
