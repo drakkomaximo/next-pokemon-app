@@ -15,20 +15,26 @@ export const Navbar = () => {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'start',
-            padding: '0px 50px',
+            padding: '0px 30px',
             backgroundColor: theme?.colors.gray100.value
         }}>
             <Image
-                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/132.png"
+                src="/imgs/pokedex.png"
                 alt="icon app"
-                width={70}
-                height={90}
+                width={30}
+                height={30}
+                style={{marginRight: '3rem'}}
             />
 
-            <NextLink href="/" passHref>
+            <NextLink 
+                href="/" 
+                passHref
+                >
                 <Link >
-                    <Text color="white" h2>P</Text>
-                    <Text color="white" h3>okémon</Text>
+                    <Text color="white" h2 css={{
+                        marginLeft: '0.5rem'
+                    }}>P</Text>
+                    <Text color="white" h3>okedex</Text>
                 </Link>
             </NextLink>
 
